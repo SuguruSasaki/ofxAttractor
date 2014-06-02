@@ -19,6 +19,9 @@ void Attractor::attract(Node &node)
     
     float dist = sqrt(dx * dx + dy * dy);
     
+   
+
+    
     if( dist > 0 && dist < radius)
     {
         float s = dist/radius;

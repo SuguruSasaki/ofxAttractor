@@ -1,11 +1,38 @@
 #include "ofApp.h"
 #include "Node.h"
+#include "Attractor.h"
 
 std::vector<Node> nodes;
 static const int NODE_MAX = 100;
 
 const int xCount = 200;
 const int yCount = 200;
+const int gridSize = 500;
+
+Attractor attractor(0, 0);
+
+void ofApp::initGrid()
+{
+    for(int y = 0; y < yCount; ++y)
+    {
+        for(int x = 0; x < xCount; ++x)
+        {
+            float xPos = x * (gridSize/(xCount-1) ) + (ofGetWidth()-gridSize) / 2;
+            float yPos = y * (gridSize/(yCount-1) ) + (ofGetHeight()-gridSize) / 2;
+            
+           // std::cout << yPos << std::endl;
+
+            Node node = Node(xPos, yPos);
+            node.minX = 0;
+            node.minY = 0;
+            node.maxX = ofGetWidth();
+            node.maxY = ofGetHeight();
+            node.damping = 0.02;
+
+            nodes.push_back(node);
+        }
+    }
+}
 
 
 //--------------------------------------------------------------
@@ -15,32 +42,24 @@ void ofApp::setup()
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     
-    for( int i = 0; i < 100; ++i)
-    {
-        float x = ofRandom(5, ofGetWidth()-5);
-        float y = ofRandom(5, ofGetHeight()-5);
-        Node node(x, y);
-        node.minX = 5;
-        node.minY = 5;
-        node.maxX = ofGetWidth()-5;
-        node.maxY = ofGetHeight()-5;
-        node.velocity.x = ofRandom(-3, 3);
-        node.velocity.y = ofRandom(-3, 3);
-        node.damping = 0.01;
-        
-        nodes.push_back(node);
-    }
+    attractor.radius = 200;
     
-    std::cout << pow(2, 0.5) << std::endl;
-
+    // Node Gridを作成
+    initGrid();
 }
 
 //--------------------------------------------------------------
 void ofApp::update()
 {
-    for(int i = 0; i < NODE_MAX; ++i)
+    attractor.x = mouseX;
+    attractor.y = mouseY;
+    
+    std::vector<Node>::iterator it = nodes.begin();
+    while(it != nodes.end())
     {
-        nodes[i].update();
+        attractor.attract(*it);
+        it->update();
+        ++it;
     }
 }
 
@@ -50,9 +69,11 @@ void ofApp::draw()
     ofNoFill();
     ofSetColor(255, 0, 0);
     
-    for(int i = 0; i < NODE_MAX; ++i)
+    std::vector<Node>::iterator it = nodes.begin();
+    while (it != nodes.end())
     {
-        ofCircle(nodes[i].position.x, nodes[i].position.y, 5);
+        ofCircle(it->position.x, it->position.y, 1);
+        ++it;
     }
 }
 
