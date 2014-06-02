@@ -11,6 +11,9 @@ const int gridSize = 500;
 
 Attractor attractor(0, 0);
 
+
+bool isPressed = false;
+
 void ofApp::initGrid()
 {
     for(int y = 0; y < yCount; ++y)
@@ -27,7 +30,7 @@ void ofApp::initGrid()
             node.minY = 0;
             node.maxX = ofGetWidth();
             node.maxY = ofGetHeight();
-            node.damping = 0.02;
+            node.damping = 0.01;
 
             nodes.push_back(node);
         }
@@ -42,6 +45,7 @@ void ofApp::setup()
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     
+
     attractor.radius = 200;
     
     // Node Gridを作成
@@ -57,7 +61,10 @@ void ofApp::update()
     std::vector<Node>::iterator it = nodes.begin();
     while(it != nodes.end())
     {
-        attractor.attract(*it);
+        if(isPressed)
+        {
+            attractor.attract(*it);
+        }
         it->update();
         ++it;
     }
@@ -66,8 +73,8 @@ void ofApp::update()
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-    ofNoFill();
-    ofSetColor(255, 0, 0);
+    
+    ofSetColor(0, 0, 0);
     
     std::vector<Node>::iterator it = nodes.begin();
     while (it != nodes.end())
@@ -98,12 +105,15 @@ void ofApp::mouseDragged(int x, int y, int button){
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-
+void ofApp::mousePressed(int x, int y, int button)
+{
+    isPressed = true;
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseReleased(int x, int y, int button)
+{
+    isPressed = false;
 
 }
 
